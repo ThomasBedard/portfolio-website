@@ -5,6 +5,7 @@ import Education from "./sections/Education/Education";
 import Contact from "./sections/Contact/Contact";
 import About from "./sections/About/About";
 import Navbar from "./sections/Navbar";
+import Comments from "./sections/Comments/Comments";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Projects />
       <Education />
       <Contact />
+      <Comments />
     </>
   );
 }

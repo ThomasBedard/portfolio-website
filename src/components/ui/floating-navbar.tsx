@@ -8,6 +8,9 @@ import {
 } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import LoginButton from "./login-button";
+import { useAuth0 } from "@auth0/auth0-react";
+import LogoutButton from "./logout-button";
 
 export const FloatingNav = ({
   navItems,
@@ -21,6 +24,7 @@ export const FloatingNav = ({
   className?: string;
 }) => {
   const { scrollYProgress } = useScroll();
+  const { isAuthenticated } = useAuth0();
 
   const [visible, setVisible] = useState(false);
 
@@ -78,9 +82,12 @@ export const FloatingNav = ({
           )
         )}
         <button className="border text-sm font-medium relative border-white/[0.2] text-white px-4 py-2 rounded-full">
-          <span>Download CV</span>
+          <span>
+            <a href="./src/resume/eng-resume.pdf"></a>Download CV
+          </span>
           <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-blue-500 to-transparent  h-px" />
         </button>
+        {isAuthenticated ? <LogoutButton /> : <LoginButton />}
       </motion.div>
     </AnimatePresence>
   );

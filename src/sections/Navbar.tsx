@@ -12,7 +12,19 @@ export default function Navbar() {
       link: "#",
     },
     {
+      name: "Projects",
+      link: "#",
+    },
+    {
+      name: "Education",
+      link: "#",
+    },
+    {
       name: "Contact",
+      link: "#",
+    },
+    {
+      name: "Comments",
       link: "#",
     },
   ];

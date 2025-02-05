@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import ContactForm from "./ContactForm";
-export default function Contact() {
+
+export default function Comments() {
   return (
     <motion.div
       initial={{ opacity: 0.0, y: 40 }}
@@ -9,10 +9,11 @@ export default function Contact() {
       className="relative flex flex-col gap-4 items-center justify-center px-4 h-screen"
     >
       <div className="text-3xl md:text-7xl font-bold text-center bg-gradient-to-b from-white to-neutral-400 text-transparent bg-clip-text">
-        Contact Me
+        Comment Section
       </div>
-
-      <ContactForm />
+      <div className="font-extralight text-base md:text-4xl text-neutral-200 py-4">
+        Here you can tell me about your thoughts.
+      </div>
     </motion.div>
   );
 }
