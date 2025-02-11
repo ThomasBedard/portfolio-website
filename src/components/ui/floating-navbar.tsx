@@ -7,10 +7,10 @@ import {
   useMotionValueEvent,
 } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Link } from "react-router-dom";
 import LoginButton from "./login-button";
 import { useAuth0 } from "@auth0/auth0-react";
 import LogoutButton from "./logout-button";
+import { saveAs } from "file-saver";
 
 export const FloatingNav = ({
   navItems,
@@ -27,6 +27,9 @@ export const FloatingNav = ({
   const { isAuthenticated } = useAuth0();
 
   const [visible, setVisible] = useState(false);
+  const handleDownloadCV = () => {
+    saveAs("public/pdf/ThomasResume.pdf", "ThomasResume.pdf");
+  };
 
   useMotionValueEvent(scrollYProgress, "change", (current) => {
     // Check if current is not undefined and is a number
@@ -65,26 +68,24 @@ export const FloatingNav = ({
         )}
       >
         {navItems.map(
-          (
-            navItem: { name: string; link: string; icon?: JSX.Element },
-            idx: number
-          ) => (
-            <Link
-              key={`link=${idx}`}
-              to={navItem.link}
+          (navItem: { name: string; link: string; icon?: JSX.Element }) => (
+            <a
+              //key={`link=${idx}`}
+              href={navItem.link}
               className={cn(
                 "relative text-neutral-50 items-center flex space-x-1 hover:text-neutral-300"
               )}
             >
               <span className="block sm:hidden">{navItem.icon}</span>
               <span className="hidden sm:block text-sm">{navItem.name}</span>
-            </Link>
+            </a>
           )
         )}
-        <button className="border text-sm font-medium relative border-white/[0.2] text-white px-4 py-2 rounded-full">
-          <span>
-            <a href="./src/resume/eng-resume.pdf"></a>Download CV
-          </span>
+        <button
+          onClick={handleDownloadCV}
+          className="border text-sm font-medium relative border-white/[0.2] text-white px-4 py-2 rounded-full"
+        >
+          <span>Download CV</span>
           <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-blue-500 to-transparent  h-px" />
         </button>
         {isAuthenticated ? <LogoutButton /> : <LoginButton />}

@@ -5,7 +5,7 @@ import Education from "./sections/Education/Education";
 import Contact from "./sections/Contact/Contact";
 import About from "./sections/About/About";
 import Navbar from "./sections/Navbar";
-import Comments from "./sections/Comments/Comments";
+import Testimonials from "./sections/Testimonials/Testimonials";
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
       <Projects />
       <Education />
       <Contact />
-      <Comments />
+      <Testimonials />
     </>
   );
 }

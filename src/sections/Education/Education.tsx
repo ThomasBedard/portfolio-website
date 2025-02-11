@@ -7,6 +7,7 @@ export default function Education() {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.8, ease: "easeInOut" }}
       className="relative flex flex-col gap-4 items-center justify-center px-4 h-screen"
+      id="education"
     >
       <div className="text-3xl md:text-7xl font-bold text-center bg-gradient-to-b from-white to-neutral-400 text-transparent bg-clip-text">
         Education and Certifications
