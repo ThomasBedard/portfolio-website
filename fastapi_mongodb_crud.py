@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field
 from typing import List, Optional
@@ -20,6 +21,14 @@ app = FastAPI()
 # MongoDB Client
 client = AsyncIOMotorClient(MONGO_URI)
 db = client[DB_NAME]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://bedardthomas.com"],  # Change "*" to your frontend URL in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Models
 class Project(BaseModel):
