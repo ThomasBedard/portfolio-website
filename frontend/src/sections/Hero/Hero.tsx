@@ -4,7 +4,7 @@ import { saveAs } from "file-saver";
 
 export default function Hero() {
   const handleDownloadCV = () => {
-    saveAs("public/pdf/ThomasResume.pdf", "ThomasResume.pdf");
+    saveAs("/pdf/ThomasResume.pdf", "ThomasResume.pdf");
   };
   return (
     <div className="relative h-screen w-screen overflow-hidden">

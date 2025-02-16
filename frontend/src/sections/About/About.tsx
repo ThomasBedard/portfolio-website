@@ -19,7 +19,7 @@ export default function About() {
         {/* Left side: Image */}
         <div className="w-full md:w-1/2">
           <img
-            src="public/images/me.png"
+            src="/images/me.jpg"
             alt="Picture of me"
             className="rounded-lg shadow-lg w-full h-auto object-cover"
           />

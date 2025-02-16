@@ -20,7 +20,7 @@ export const FloatingNav = ({
   const { isAuthenticated } = useAuth0();
 
   const handleDownloadCV = () => {
-    saveAs("public/pdf/ThomasResume.pdf", "ThomasResume.pdf");
+    saveAs("/pdf/ThomasResume.pdf", "ThomasResume.pdf");
   };
 
   return (
