@@ -17,11 +17,11 @@ export default function About() {
       </div>
       <div className="flex flex-col md:flex-row items-center gap-8 w-full max-w-5xl">
         {/* Left side: Image */}
-        <div className="w-full md:w-1/2">
+        <div className="w-full md:w-1/2 flex justify-center">
           <img
             src="/images/me.jpg"
             alt="Picture of me"
-            className="rounded-lg shadow-lg w-full h-auto object-cover"
+            className="w-96 h-96 object-cover rounded-full shadow-lg border-4 border-white"
           />
         </div>
         {/* Right side: Description */}

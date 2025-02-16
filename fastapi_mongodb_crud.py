@@ -1,11 +1,15 @@
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional
 from datetime import datetime
 from dotenv import load_dotenv
 from bson import ObjectId
+import smtplib
 import os
 
 # Load .env file
@@ -24,11 +28,45 @@ db = client[DB_NAME]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://bedardthomas.com"],  # Change "*" to your frontend URL in production
+    allow_origins=["https://bedardthomas.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Email configuration
+SMTP_SERVER = os.getenv("SMTP_SERVER")
+SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
+EMAIL_SENDER = os.getenv("EMAIL_SENDER")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+
+# Contact Form Model
+class ContactForm(BaseModel):
+    name: str
+    email: EmailStr
+    message: str
+
+@app.post("/contact")
+async def contact_me(form: ContactForm):
+    try:
+        # Create email content
+        msg = MIMEMultipart()
+        msg["From"] = EMAIL_SENDER
+        msg["To"] = EMAIL_SENDER  # You receive the email
+        msg["Subject"] = f"New Contact Message from {form.name}"
+        body = f"Name: {form.name}\nEmail: {form.email}\n\nMessage:\n{form.message}"
+        msg.attach(MIMEText(body, "plain"))
+
+        # Send email
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()  # Enable TLS encryption
+            server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+            server.sendmail(EMAIL_SENDER, EMAIL_SENDER, msg.as_string())
+
+        return {"message": "Your message was sent successfully!"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to send message: {str(e)}")
 
 # Models
 class Project(BaseModel):

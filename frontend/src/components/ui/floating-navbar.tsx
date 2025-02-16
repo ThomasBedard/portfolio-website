@@ -25,37 +25,33 @@ export const FloatingNav = ({
 
   return (
     <AnimatePresence mode="wait">
-      {/* Static Navbar (No scroll behavior) */}
       <motion.div
         initial={{ opacity: 1, y: 0 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
         className={cn(
-          "flex max-w-fit fixed top-10 inset-x-0 mx-auto border border-white/[0.2] rounded-full bg-black shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] z-[5000] pr-2 pl-8 py-2 items-center justify-center space-x-4",
+          "flex flex-wrap max-w-full md:max-w-fit fixed top-10 inset-x-0 mx-auto border border-white/[0.2] rounded-full bg-black shadow-md z-[5000] px-4 md:px-8 py-2 items-center justify-center gap-2 md:space-x-4",
           className
         )}
       >
-        {/* Fixed: Add Unique Key Prop */}
+        {/* Section Links */}
         {navItems.map((navItem, index) => (
           <a
-            key={index} // Unique key added here
+            key={index}
             href={navItem.link}
-            className={cn(
-              "relative text-neutral-50 items-center flex space-x-1 hover:text-neutral-300"
-            )}
+            className="text-neutral-50 text-xs md:text-sm flex items-center hover:text-neutral-300"
           >
-            <span className="block sm:hidden">{navItem.icon}</span>
-            <span className="hidden sm:block text-sm">{navItem.name}</span>
+            <span>{navItem.icon}</span>
+            <span className="ml-1">{navItem.name}</span>
           </a>
         ))}
 
         {/* Download CV Button */}
         <button
           onClick={handleDownloadCV}
-          className="border text-sm font-medium relative border-white/[0.2] text-white px-4 py-2 rounded-full"
+          className="border text-xs md:text-sm font-medium border-white/[0.2] text-white px-3 py-1 md:px-4 md:py-2 rounded-full"
         >
-          <span>Download CV</span>
-          <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-blue-500 to-transparent h-px" />
+          Download CV
         </button>
 
         {/* Auth0 Login/Logout Buttons */}

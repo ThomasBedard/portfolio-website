@@ -17,11 +17,17 @@ export default function CommentCard({ comment }: CommentProps) {
       className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700"
     >
       <p className="text-gray-400 text-sm">
-        <strong>User:</strong> {comment.user_id}
+        <strong>User:</strong> {comment.user_id?.trim() || "Anonymous"}
       </p>
       <p className="text-gray-300 text-lg mt-2">{comment.comment_text}</p>
       <p className="text-gray-500 text-xs mt-2">
-        {new Date(comment.created_at).toLocaleString()}
+        {new Date(comment.created_at).toLocaleString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
       </p>
     </motion.div>
   );
