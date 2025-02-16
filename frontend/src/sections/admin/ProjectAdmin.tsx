@@ -4,7 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL + "/projects";
 
 // Define TypeScript types
 type ProjectType = {
-  _id: string;
+  _id?: string;
   title: string;
   description: string;
   image_url: string;
@@ -15,7 +15,6 @@ type ProjectType = {
 export default function ProjectAdmin() {
   const [projects, setProjects] = useState<ProjectType[]>([]);
   const [newProject, setNewProject] = useState<ProjectType>({
-    _id: "",
     title: "",
     description: "",
     image_url: "",
@@ -61,7 +60,7 @@ export default function ProjectAdmin() {
           >
             <span className="text-white">{project.title}</span>
             <button
-              onClick={() => handleDeleteProject(project._id)}
+              onClick={() => handleDeleteProject(project._id!)}
               className="text-red-500"
             >
               Delete
@@ -88,6 +87,36 @@ export default function ProjectAdmin() {
           value={newProject.description}
           onChange={(e) =>
             setNewProject({ ...newProject, description: e.target.value })
+          }
+        />
+        <input
+          type="text"
+          placeholder="Image URL"
+          className="w-full p-2 rounded mt-2"
+          value={newProject.image_url}
+          onChange={(e) =>
+            setNewProject({ ...newProject, image_url: e.target.value })
+          }
+        />
+        <input
+          type="text"
+          placeholder="Project URL"
+          className="w-full p-2 rounded mt-2"
+          value={newProject.project_url}
+          onChange={(e) =>
+            setNewProject({ ...newProject, project_url: e.target.value })
+          }
+        />
+        <input
+          type="text"
+          placeholder="Tech Stack (comma-separated)"
+          className="w-full p-2 rounded mt-2"
+          value={newProject.tech_stack.join(", ")}
+          onChange={(e) =>
+            setNewProject({
+              ...newProject,
+              tech_stack: e.target.value.split(",").map((tech) => tech.trim()),
+            })
           }
         />
         <button

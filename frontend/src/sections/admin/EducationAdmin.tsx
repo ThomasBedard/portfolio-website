@@ -4,7 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL + "/education";
 
 // Define TypeScript types
 type EducationType = {
-  _id: string;
+  _id?: string;
   institution: string;
   degree?: string;
   field_of_study: string;
@@ -16,7 +16,6 @@ type EducationType = {
 export default function EducationAdmin() {
   const [education, setEducation] = useState<EducationType[]>([]);
   const [newEducation, setNewEducation] = useState<EducationType>({
-    _id: "",
     institution: "",
     degree: "",
     field_of_study: "",
@@ -65,7 +64,7 @@ export default function EducationAdmin() {
           >
             <span className="text-white">{edu.institution}</span>
             <button
-              onClick={() => handleDeleteEducation(edu._id)}
+              onClick={() => handleDeleteEducation(edu._id!)}
               className="text-red-500"
             >
               Delete
@@ -94,6 +93,41 @@ export default function EducationAdmin() {
             setNewEducation({ ...newEducation, degree: e.target.value })
           }
         />
+        <input
+          type="text"
+          placeholder="Field of Study"
+          className="w-full p-2 rounded mt-2"
+          value={newEducation.field_of_study}
+          onChange={(e) =>
+            setNewEducation({ ...newEducation, field_of_study: e.target.value })
+          }
+        />
+        <input
+          type="date"
+          placeholder="Start Date"
+          className="w-full p-2 rounded mt-2"
+          value={newEducation.start_date}
+          onChange={(e) =>
+            setNewEducation({ ...newEducation, start_date: e.target.value })
+          }
+        />
+        <input
+          type="date"
+          placeholder="End Date"
+          className="w-full p-2 rounded mt-2"
+          value={newEducation.end_date || ""}
+          onChange={(e) =>
+            setNewEducation({ ...newEducation, end_date: e.target.value })
+          }
+        />
+        <textarea
+          placeholder="Description"
+          className="w-full p-2 rounded mt-2"
+          value={newEducation.description || ""}
+          onChange={(e) =>
+            setNewEducation({ ...newEducation, description: e.target.value })
+          }
+        ></textarea>
         <button
           onClick={handleCreateEducation}
           className="bg-green-500 text-white p-2 rounded mt-2"
