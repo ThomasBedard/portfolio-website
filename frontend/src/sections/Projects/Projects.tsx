@@ -1,7 +1,33 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import ProjectCard from "./ProjectCard";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+interface Project {
+  _id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  project_url: string;
+  tech_stack: string[];
+}
+
 export default function Projects() {
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    fetch(API_URL)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch projects");
+        }
+        return res.json();
+      })
+      .then((data) => setProjects(data))
+      .catch((error) => console.error("Error fetching projects:", error));
+  }, []);
+
   return (
     <div
       id="projects"
@@ -20,28 +46,23 @@ export default function Projects() {
         <div className="font-extralight text-base md:text-4xl text-neutral-200 py-4 text-center">
           Here are some of the projects I've worked on.
         </div>
+
+        {/* Render Projects Dynamically */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <ProjectCard
-            title="Pet Clinic Web App"
-            description="Web application for a pet clinic."
-            imageUrl="/images/project1.jpg"
-            projectUrl="https://github.com/cgerard321/champlain_petclinic"
-            techStack={["React", "Tailwind CSS", "Node.js"]}
-          />
-          <ProjectCard
-            title="CCLEAN inc. Web App"
-            description="Web application for a cleaning company to manage their services."
-            imageUrl="/images/project2.jpg"
-            projectUrl="https://github.com/ThomasBedard/ccleaninc"
-            techStack={["Java", "SpringBoot", "MySQL"]}
-          />
-          <ProjectCard
-            title="Brain MRI classification"
-            description="An app that leverages AI to classify brain MRI images."
-            imageUrl="/images/project3.jpg"
-            projectUrl="https://github.com/tonyang660/brainmridetector"
-            techStack={["Python", "AI", "Machine Learning"]}
-          />
+          {projects.length > 0 ? (
+            projects.map((project) => (
+              <ProjectCard
+                key={project._id}
+                title={project.title}
+                description={project.description}
+                imageUrl={project.image_url}
+                projectUrl={project.project_url}
+                techStack={project.tech_stack}
+              />
+            ))
+          ) : (
+            <p className="text-white text-center w-full">Loading projects...</p>
+          )}
         </div>
       </motion.div>
     </div>

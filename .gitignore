@@ -1,0 +1,20 @@
+# Node.js & Vite (Frontend)
+frontend/node_modules
+frontend/dist/
+frontend/.vite/
+frontend/*.log
+frontend/.env
+frontend/.vscode/
+
+# Python & FastAPI (Backend)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.env
+
+# OS & Editor-specific Files
+.DS_Store
+Thumbs.db
+.idea/
