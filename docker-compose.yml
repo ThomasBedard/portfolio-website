@@ -1,0 +1,67 @@
+services:
+  db:
+    image: mysql:latest
+    container_name: portfolio-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: portfolio
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pwd
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./portfolio-api/data/database:/var/lib/mysql # Ensure this path exists
+      - ./portfolio-api/data/init.d:/docker-entrypoint-initdb.d # Ensure this path exists
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-uuser", "-ppwd", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  portfolio-api:
+    build:
+      context: ./portfolio-api # Fix: Ensure we're using the correct backend folder
+      dockerfile: Dockerfile # Fix: Explicitly specify the backend Dockerfile
+    container_name: portfolio-api
+    env_file:
+      - ./portfolio-api/.env # Ensure the .env file is in the correct location
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/portfolio
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=pwd
+    depends_on:
+      db:
+        condition: service_healthy # Ensures DB is fully up before API starts
+
+  frontend:
+    build:
+      context: ./ # Fix: Ensure this is pointing to the correct frontend folder
+      dockerfile: Dockerfile # Ensure Dockerfile is in the project root
+    container_name: portfolio_frontend
+    env_file:
+      - .env # Fix: Ensure the correct path is used for the environment file
+    ports:
+      - "5173:5173"
+    depends_on:
+      - portfolio-api
+
+  phpmyadmin:
+    image: arm64v8/phpmyadmin:latest
+    platform: linux/arm64
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_ARBITRARY=1
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
