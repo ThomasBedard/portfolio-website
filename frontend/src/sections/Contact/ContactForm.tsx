@@ -1,17 +1,28 @@
 "use client";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoginButton from "@/components/ui/login-button";
 
-const API_URL = import.meta.env.VITE_API_URL + "/contact"; // Your backend API for handling contact form submissions
+const API_URL = import.meta.env.VITE_API_URL + "/contact";
 
 export default function ContactForm() {
   const { isAuthenticated, user } = useAuth0();
   const [formData, setFormData] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
+    name: "",
+    email: "",
     message: "",
   });
+
+  // Update formData when the user logs in
+  useEffect(() => {
+    if (user) {
+      setFormData((prevData) => ({
+        ...prevData,
+        name: user.name || "",
+        email: user.email || "",
+      }));
+    }
+  }, [user]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
@@ -76,6 +87,7 @@ export default function ContactForm() {
                   onChange={handleChange}
                   className="py-3 px-4 block w-full border-2 border-gray-600 rounded-md bg-gray-800 text-white placeholder-gray-500 focus:border-white focus:ring-white shadow-sm"
                   required
+                  disabled
                 />
               </div>
 
@@ -95,6 +107,7 @@ export default function ContactForm() {
                   onChange={handleChange}
                   className="py-3 px-4 block w-full border-2 border-gray-600 rounded-md bg-gray-800 text-white placeholder-gray-500 focus:border-white focus:ring-white shadow-sm"
                   required
+                  disabled
                 />
               </div>
 
