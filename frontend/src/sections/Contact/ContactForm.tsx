@@ -13,12 +13,11 @@ export default function ContactForm() {
     message: "",
   });
 
-  // Update formData when the user logs in
+  // Auto-fill only the email field when the user logs in
   useEffect(() => {
-    if (user) {
+    if (user?.email) {
       setFormData((prevData) => ({
         ...prevData,
-        name: user.name || "",
         email: user.email || "",
       }));
     }
@@ -52,7 +51,7 @@ export default function ContactForm() {
 
       setStatusMessage("✅ Message sent successfully!");
       setFormData({
-        name: user?.name || "",
+        name: "",
         email: user?.email || "",
         message: "",
       });
@@ -71,7 +70,7 @@ export default function ContactForm() {
           <h2 className="text-2xl font-bold text-white mb-4">Contact Me</h2>
           <form onSubmit={handleSubmit}>
             <div className="grid gap-y-4">
-              {/* Name Field */}
+              {/* Name Field (User can edit) */}
               <div>
                 <label
                   htmlFor="name"
@@ -87,11 +86,10 @@ export default function ContactForm() {
                   onChange={handleChange}
                   className="py-3 px-4 block w-full border-2 border-gray-600 rounded-md bg-gray-800 text-white placeholder-gray-500 focus:border-white focus:ring-white shadow-sm"
                   required
-                  disabled
                 />
               </div>
 
-              {/* Email Field */}
+              {/* Email Field (Auto-filled, disabled) */}
               <div>
                 <label
                   htmlFor="email"
@@ -104,7 +102,6 @@ export default function ContactForm() {
                   id="email"
                   name="email"
                   value={formData.email}
-                  onChange={handleChange}
                   className="py-3 px-4 block w-full border-2 border-gray-600 rounded-md bg-gray-800 text-white placeholder-gray-500 focus:border-white focus:ring-white shadow-sm"
                   required
                   disabled
