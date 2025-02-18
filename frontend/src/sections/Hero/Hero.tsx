@@ -7,6 +7,7 @@ import { translations } from "@/contexts/translations";
 export default function Hero() {
   const { language } = useLanguage();
   const t = translations[language];
+
   const handleDownloadCV = () => {
     const cvFileName =
       language === "fr" ? "ThomasResumeFR.pdf" : "ThomasResumeENG.pdf";
@@ -37,6 +38,8 @@ export default function Hero() {
         <div className="font-extralight text-base md:text-4xl text-neutral-200 py-4">
           {t.heroSubtitle}
         </div>
+
+        {/* Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button className="bg-white rounded-full w-50 text-black px-4 py-2">
             <a
@@ -54,6 +57,35 @@ export default function Hero() {
           >
             <span>{t.downloadCV}</span>
           </HoverBorderGradient>
+        </div>
+
+        {/* Social Media Icons */}
+        <div className="flex space-x-6 mt-6">
+          {/* GitHub */}
+          <a
+            href="https://github.com/ThomasBedard"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="/images/github.png"
+              alt="GitHub"
+              className="w-8 h-8 transition-transform transform hover:scale-110"
+            />
+          </a>
+
+          {/* LinkedIn */}
+          <a
+            href="https://www.linkedin.com/in/thomas-bedard-54a396293"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="/images/linkedin.png"
+              alt="LinkedIn"
+              className="w-8 h-8 transition-transform transform hover:scale-110"
+            />
+          </a>
         </div>
       </motion.div>
     </div>
