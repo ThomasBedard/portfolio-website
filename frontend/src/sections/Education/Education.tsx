@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import EducationCard from "./EducationCard";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translations } from "@/contexts/translations";
 
 const API_URL = import.meta.env.VITE_API_URL + "/education"; // Use environment variable
 
@@ -16,6 +18,8 @@ type EducationType = {
 
 export default function Education() {
   const [education, setEducation] = useState<EducationType[]>([]);
+  const { language } = useLanguage();
+  const t = translations[language];
 
   useEffect(() => {
     fetch(API_URL)
@@ -33,10 +37,10 @@ export default function Education() {
       id="education"
     >
       <div className="text-3xl md:text-7xl font-bold text-center bg-gradient-to-b from-white to-neutral-400 text-transparent bg-clip-text">
-        Education and Certifications
+        {t.educationAndCertifications}
       </div>
       <div className="font-extralight text-base md:text-4xl text-neutral-200 py-4">
-        My academic background and learning experiences.
+        {t.educationDescription}
       </div>
 
       {/* Grid for Education Cards */}
@@ -46,7 +50,7 @@ export default function Education() {
             <EducationCard key={edu._id} education={edu} />
           ))
         ) : (
-          <p className="text-center text-white">Loading education data...</p>
+          <p className="text-center text-white">{t.loadingEducation}</p>
         )}
       </div>
     </motion.div>

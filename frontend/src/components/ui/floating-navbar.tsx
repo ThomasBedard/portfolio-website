@@ -1,10 +1,11 @@
-"use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import LoginButton from "./login-button";
 import { useAuth0 } from "@auth0/auth0-react";
 import LogoutButton from "./logout-button";
 import { saveAs } from "file-saver";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translations } from "@/contexts/translations";
 
 export const FloatingNav = ({
   navItems,
@@ -18,9 +19,13 @@ export const FloatingNav = ({
   className?: string;
 }) => {
   const { isAuthenticated } = useAuth0();
+  const { language, setLanguage } = useLanguage();
+  const t = translations[language];
 
   const handleDownloadCV = () => {
-    saveAs("/pdf/ThomasResume.pdf", "ThomasResume.pdf");
+    const cvFileName =
+      language === "fr" ? "ThomasResumeFR.pdf" : "ThomasResumeENG.pdf";
+    saveAs(`/pdf/${cvFileName}`, cvFileName);
   };
 
   return (
@@ -46,12 +51,22 @@ export const FloatingNav = ({
           </a>
         ))}
 
+        {/* Language Switcher Dropdown */}
+        <select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value as "en" | "fr")}
+          className="bg-stone-950 text-white px-3 py-1 rounded-lg border border-white/[0.2] focus:outline-none"
+        >
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+        </select>
+
         {/* Download CV Button */}
         <button
           onClick={handleDownloadCV}
           className="border text-xs md:text-sm font-medium border-white/[0.2] text-white px-3 py-1 md:px-4 md:py-2 rounded-full"
         >
-          Download CV
+          {t.downloadCV}
         </button>
 
         {/* Auth0 Login/Logout Buttons */}

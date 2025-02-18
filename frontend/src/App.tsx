@@ -1,5 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import Navbar from "./sections/Navbar";
 import Hero from "./sections/Hero/Hero";
 import Projects from "./sections/Projects/Projects";
@@ -36,16 +37,18 @@ function App() {
 
   return (
     <>
-      <Navbar />
-      <Hero />
-      <About />
-      <Projects />
-      <Education />
-      <Contact />
-      <Testimonials />
+      <LanguageProvider>
+        <Navbar />
+        <Hero />
+        <About />
+        <Projects />
+        <Education />
+        <Contact />
+        <Testimonials />
 
-      {/* ✅ Only show the admin section if the user is an admin */}
-      {isAdmin && <Admin />}
+        {/* ✅ Only show the admin section if the user is an admin */}
+        {isAdmin && <Admin />}
+      </LanguageProvider>
     </>
   );
 }

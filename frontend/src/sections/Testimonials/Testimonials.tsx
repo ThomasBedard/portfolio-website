@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import CommentCard from "./CommentCard";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translations } from "@/contexts/translations";
 
 const API_URL = import.meta.env.VITE_API_URL + "/comments"; // API endpoint
 
@@ -18,6 +20,8 @@ export default function Testimonials() {
   const [showForm, setShowForm] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [username, setUsername] = useState("");
+  const { language } = useLanguage();
+  const t = translations[language];
 
   useEffect(() => {
     fetch(API_URL)
@@ -64,10 +68,10 @@ export default function Testimonials() {
       id="comments"
     >
       <div className="text-3xl md:text-7xl font-bold text-center bg-gradient-to-b from-white to-neutral-400 text-transparent bg-clip-text">
-        Comment Section
+        {t.comments}
       </div>
       <div className="font-extralight text-base md:text-4xl text-neutral-200 py-4">
-        Here you can tell me about your thoughts.
+        {t.commentDescription}
       </div>
 
       {/* Show "Add Comment" Button if User is Logged In */}
@@ -115,9 +119,7 @@ export default function Testimonials() {
             <CommentCard key={comment._id} comment={comment} />
           ))
         ) : (
-          <p className="text-center text-white">
-            No comments yet. Be the first to comment!
-          </p>
+          <p className="text-center text-white">{t.loadingComments}</p>
         )}
       </div>
     </motion.div>

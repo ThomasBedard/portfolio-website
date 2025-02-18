@@ -1,11 +1,18 @@
 import { motion } from "framer-motion";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { saveAs } from "file-saver";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translations } from "@/contexts/translations";
 
 export default function Hero() {
+  const { language } = useLanguage();
+  const t = translations[language];
   const handleDownloadCV = () => {
-    saveAs("/pdf/ThomasResume.pdf", "ThomasResume.pdf");
+    const cvFileName =
+      language === "fr" ? "ThomasResumeFR.pdf" : "ThomasResumeENG.pdf";
+    saveAs(`/pdf/${cvFileName}`, cvFileName);
   };
+
   return (
     <div className="relative h-screen w-screen overflow-hidden">
       {/* Background */}
@@ -24,11 +31,11 @@ export default function Hero() {
         id="home"
       >
         <div className="text-3xl md:text-7xl font-bold text-center bg-gradient-to-b from-white to-neutral-300 text-transparent bg-clip-text">
-          Thomas Bedard
+          {t.heroTitle}
         </div>
 
         <div className="font-extralight text-base md:text-4xl text-neutral-200 py-4">
-          Software Developer, Designer and Creator
+          {t.heroSubtitle}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button className="bg-white rounded-full w-50 text-black px-4 py-2">
@@ -36,7 +43,7 @@ export default function Hero() {
               href="#about"
               className="text-black no-underline hover:text-black"
             >
-              Learn More
+              {t.learnMore}
             </a>
           </button>
           <HoverBorderGradient
@@ -45,7 +52,7 @@ export default function Hero() {
             onClick={handleDownloadCV}
             className="bg-black text-white flex items-center space-x-2 border-2 border-opacity-5 border-gray-500"
           >
-            <span>Download CV</span>
+            <span>{t.downloadCV}</span>
           </HoverBorderGradient>
         </div>
       </motion.div>

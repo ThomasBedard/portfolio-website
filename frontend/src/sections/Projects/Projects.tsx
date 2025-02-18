@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import ProjectCard from "./ProjectCard";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translations } from "@/contexts/translations";
 
 const API_URL = import.meta.env.VITE_API_URL + "/projects";
 
@@ -15,6 +17,8 @@ interface Project {
 
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const { language } = useLanguage();
+  const t = translations[language];
 
   useEffect(() => {
     fetch(API_URL)
@@ -41,10 +45,10 @@ export default function Projects() {
         className="w-full max-w-6xl"
       >
         <div className="text-3xl md:text-7xl font-bold text-center bg-gradient-to-b text-white">
-          Projects
+          {t.projects}
         </div>
         <div className="font-extralight text-base md:text-4xl text-neutral-200 py-4 text-center">
-          Here are some of the projects I've worked on.
+          {t.projectDesc}
         </div>
 
         {/* Render Projects Dynamically */}
@@ -61,7 +65,7 @@ export default function Projects() {
               />
             ))
           ) : (
-            <p className="text-white text-center w-full">Loading projects...</p>
+            <p className="text-white text-center w-full">{t.loadingProjects}</p>
           )}
         </div>
       </motion.div>

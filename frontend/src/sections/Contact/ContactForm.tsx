@@ -2,11 +2,15 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState, useEffect } from "react";
 import LoginButton from "@/components/ui/login-button";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translations } from "@/contexts/translations";
 
 const API_URL = import.meta.env.VITE_API_URL + "/contact";
 
 export default function ContactForm() {
   const { isAuthenticated, user } = useAuth0();
+  const { language } = useLanguage();
+  const t = translations[language];
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -149,7 +153,7 @@ export default function ContactForm() {
   } else {
     return (
       <div className="font-extralight text-base md:text-4xl text-neutral-200 py-4 text-center">
-        Please log in to contact me. <br />
+        {t.pleaseLoginToContact} <br />
         <div className="mt-4">
           <LoginButton />
         </div>

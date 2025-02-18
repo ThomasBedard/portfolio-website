@@ -1,6 +1,10 @@
 import { motion } from "framer-motion";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translations } from "@/contexts/translations";
 
 export default function About() {
+  const { language } = useLanguage();
+  const t = translations[language];
   return (
     <motion.div
       initial={{ opacity: 0.0, y: 40 }}
@@ -10,10 +14,10 @@ export default function About() {
       id="about"
     >
       <div className="text-3xl md:text-7xl font-bold text-center bg-gradient-to-b from-white to-neutral-400 text-transparent bg-clip-text">
-        About Me
+        {t.aboutMe}
       </div>
       <div className="font-extralight text-base md:text-4xl text-neutral-200 py-4">
-        A bit about myself
+        {t.aboutDescription}
       </div>
       <div className="flex flex-col md:flex-row items-center gap-8 w-full max-w-5xl">
         {/* Left side: Image */}
@@ -26,19 +30,8 @@ export default function About() {
         </div>
         {/* Right side: Description */}
         <div className="w-full md:w-1/2 text-neutral-200 text-base md:text-lg">
-          <p>
-            Hello, I’m Thomas Bedard, a passionate software developer and
-            designer with a knack for creating engaging digital experiences.
-            With expertise in both front-end and back-end technologies, I strive
-            to build projects that are not only visually appealing but also
-            functionally robust.
-          </p>
-          <p className="mt-4">
-            I believe in the power of design and technology to transform ideas
-            into reality. Whether it’s building web applications, designing user
-            interfaces, or solving complex technical challenges, I’m always
-            excited to learn and innovate.
-          </p>
+          <p>{t.aboutIntro}</p>
+          <p className="mt-4">{t.aboutPhilosophy}</p>
         </div>
       </div>
     </motion.div>
