@@ -1,52 +1,86 @@
 import { useEffect, useState } from "react";
-
-const API_URL = import.meta.env.VITE_API_URL + "/projects";
-
-// Define TypeScript types
-type ProjectType = {
-  _id?: string;
-  title: string;
-  description: string;
-  image_url: string;
-  project_url: string;
-  tech_stack: string[];
-};
+import { Project, LocalizedContent, getAllProjects, createProject, deleteProject } from "../../../db_connect";
 
 export default function ProjectAdmin() {
-  const [projects, setProjects] = useState<ProjectType[]>([]);
-  const [newProject, setNewProject] = useState<ProjectType>({
-    title: "",
-    description: "",
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [newProject, setNewProject] = useState<Project>({
+    title: { en: "", fr: "" },
+    description: { en: "", fr: "" },
     image_url: "",
     project_url: "",
     tech_stack: [],
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(API_URL)
-      .then((res) => res.json())
-      .then((data: ProjectType[]) => setProjects(data)) // Fix `data` type
-      .catch((err) => console.error("Error fetching projects:", err));
+    const fetchProjects = async () => {
+      try {
+        const data = await getAllProjects();
+        setProjects(data);
+      } catch (err) {
+        console.error("Error fetching projects:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
   }, []);
 
-  const handleCreateProject = () => {
-    fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newProject),
-    })
-      .then((res) => res.json())
-      .then((data: ProjectType) => setProjects([...projects, data])) // Fix `data` type
-      .catch((err) => console.error("Error creating project:", err));
+  const handleCreateProject = async () => {
+    try {
+      const data = await createProject(newProject);
+      setProjects([...projects, data]);
+      
+      // Reset form
+      setNewProject({
+        title: { en: "", fr: "" },
+        description: { en: "", fr: "" },
+        image_url: "",
+        project_url: "",
+        tech_stack: [],
+      });
+    } catch (err) {
+      console.error("Error creating project:", err);
+    }
   };
 
-  const handleDeleteProject = (id: string) => {
-    fetch(`${API_URL}/${id}`, { method: "DELETE" })
-      .then(() =>
-        setProjects((prevProjects) => prevProjects.filter((p) => p._id !== id))
-      )
-      .catch((err) => console.error("Error deleting project:", err));
+  const handleDeleteProject = async (id?: string) => {
+    if (!id) return;
+    
+    try {
+      const success = await deleteProject(id);
+      if (success) {
+        setProjects((prevProjects) => prevProjects.filter((p) => p._id !== id));
+      }
+    } catch (err) {
+      console.error("Error deleting project:", err);
+    }
   };
+
+  const handleInputChange = (
+    field: keyof Project, 
+    value: string | string[] | LocalizedContent,
+    language?: "en" | "fr"
+  ) => {
+    if (field === "title" || field === "description") {
+      if (language) {
+        setNewProject({
+          ...newProject,
+          [field]: {
+            ...newProject[field] as LocalizedContent,
+            [language]: value
+          }
+        });
+      }
+    } else {
+      setNewProject({ ...newProject, [field]: value });
+    }
+  };
+
+  if (loading) {
+    return <div className="p-4 text-white">Loading projects...</div>;
+  }
 
   return (
     <div className="p-4 bg-gray-800 rounded-lg shadow-lg">
@@ -58,9 +92,12 @@ export default function ProjectAdmin() {
             key={project._id}
             className="bg-gray-700 p-4 rounded flex justify-between"
           >
-            <span className="text-white">{project.title}</span>
+            <div className="text-white">
+              <div><strong>EN:</strong> {project.title.en}</div>
+              <div><strong>FR:</strong> {project.title.fr}</div>
+            </div>
             <button
-              onClick={() => handleDeleteProject(project._id!)}
+              onClick={() => handleDeleteProject(project._id)}
               className="text-red-500"
             >
               Delete
@@ -71,59 +108,82 @@ export default function ProjectAdmin() {
 
       <div className="mt-6">
         <h3 className="text-xl font-semibold text-white">Add New Project</h3>
-        <input
-          type="text"
-          placeholder="Title"
-          className="w-full p-2 rounded mt-2"
-          value={newProject.title}
-          onChange={(e) =>
-            setNewProject({ ...newProject, title: e.target.value })
-          }
-        />
-        <input
-          type="text"
-          placeholder="Description"
-          className="w-full p-2 rounded mt-2"
-          value={newProject.description}
-          onChange={(e) =>
-            setNewProject({ ...newProject, description: e.target.value })
-          }
-        />
-        <input
-          type="text"
-          placeholder="Image URL"
-          className="w-full p-2 rounded mt-2"
-          value={newProject.image_url}
-          onChange={(e) =>
-            setNewProject({ ...newProject, image_url: e.target.value })
-          }
-        />
-        <input
-          type="text"
-          placeholder="Project URL"
-          className="w-full p-2 rounded mt-2"
-          value={newProject.project_url}
-          onChange={(e) =>
-            setNewProject({ ...newProject, project_url: e.target.value })
-          }
-        />
-        <input
-          type="text"
-          placeholder="Tech Stack (comma-separated)"
-          className="w-full p-2 rounded mt-2"
-          value={newProject.tech_stack.join(", ")}
-          onChange={(e) =>
-            setNewProject({
-              ...newProject,
-              tech_stack: e.target.value.split(",").map((tech) => tech.trim()),
-            })
-          }
-        />
+        
+        <div className="mt-4">
+          <h4 className="text-white">Title</h4>
+          <input
+            type="text"
+            placeholder="Title (English)"
+            className="w-full p-2 rounded mt-2"
+            value={newProject.title.en}
+            onChange={(e) => handleInputChange("title", e.target.value, "en")}
+          />
+          <input
+            type="text"
+            placeholder="Title (French)"
+            className="w-full p-2 rounded mt-2"
+            value={newProject.title.fr}
+            onChange={(e) => handleInputChange("title", e.target.value, "fr")}
+          />
+        </div>
+
+        <div className="mt-4">
+          <h4 className="text-white">Description</h4>
+          <textarea
+            placeholder="Description (English)"
+            className="w-full p-2 rounded mt-2"
+            rows={3}
+            value={newProject.description.en}
+            onChange={(e) => handleInputChange("description", e.target.value, "en")}
+          />
+          <textarea
+            placeholder="Description (French)"
+            className="w-full p-2 rounded mt-2"
+            rows={3}
+            value={newProject.description.fr}
+            onChange={(e) => handleInputChange("description", e.target.value, "fr")}
+          />
+        </div>
+
+        <div className="mt-4">
+          <h4 className="text-white">URLs</h4>
+          <input
+            type="text"
+            placeholder="Image URL"
+            className="w-full p-2 rounded mt-2"
+            value={newProject.image_url}
+            onChange={(e) => handleInputChange("image_url", e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Project URL"
+            className="w-full p-2 rounded mt-2"
+            value={newProject.project_url}
+            onChange={(e) => handleInputChange("project_url", e.target.value)}
+          />
+        </div>
+
+        <div className="mt-4">
+          <h4 className="text-white">Tech Stack</h4>
+          <input
+            type="text"
+            placeholder="Tech Stack (comma-separated)"
+            className="w-full p-2 rounded mt-2"
+            value={newProject.tech_stack.join(", ")}
+            onChange={(e) =>
+              handleInputChange(
+                "tech_stack",
+                e.target.value.split(",").map((tech) => tech.trim())
+              )
+            }
+          />
+        </div>
+
         <button
           onClick={handleCreateProject}
-          className="bg-green-500 text-white p-2 rounded mt-2"
+          className="bg-green-500 text-white p-2 rounded mt-4"
         >
-          Create
+          Create Project
         </button>
       </div>
     </div>

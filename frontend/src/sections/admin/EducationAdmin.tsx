@@ -1,70 +1,110 @@
 import { useEffect, useState } from "react";
-
-const API_URL = import.meta.env.VITE_API_URL + "/education";
-
-// Define TypeScript types
-type EducationType = {
-  _id?: string;
-  institution: string;
-  degree?: string;
-  field_of_study: string;
-  start_date: string;
-  end_date?: string;
-  description?: string;
-};
+import { Education, LocalizedContent, getAllEducation, createEducation, deleteEducation } from "../../../db_connect";
 
 export default function EducationAdmin() {
-  const [education, setEducation] = useState<EducationType[]>([]);
-  const [newEducation, setNewEducation] = useState<EducationType>({
-    institution: "",
-    degree: "",
-    field_of_study: "",
+  const [educations, setEducations] = useState<Education[]>([]);
+  const [newEducation, setNewEducation] = useState<Education>({
+    institution: { en: "", fr: "" },
+    degree: { en: "", fr: "" },
+    field_of_study: { en: "", fr: "" },
     start_date: "",
     end_date: "",
-    description: "",
+    description: { en: "", fr: "" },
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(API_URL)
-      .then((res) => res.json())
-      .then((data: EducationType[]) => setEducation(data))
-      .catch((err) => console.error("Error fetching education:", err));
+    const fetchEducation = async () => {
+      try {
+        const data = await getAllEducation();
+        setEducations(data);
+      } catch (err) {
+        console.error("Error fetching education:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEducation();
   }, []);
 
-  const handleCreateEducation = () => {
-    fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newEducation),
-    })
-      .then((res) => res.json())
-      .then((data: EducationType) => setEducation([...education, data]))
-      .catch((err) => console.error("Error creating education:", err));
+  const handleCreateEducation = async () => {
+    try {
+      const data = await createEducation(newEducation);
+      setEducations([...educations, data]);
+      
+      // Reset form
+      setNewEducation({
+        institution: { en: "", fr: "" },
+        degree: { en: "", fr: "" },
+        field_of_study: { en: "", fr: "" },
+        start_date: "",
+        end_date: "",
+        description: { en: "", fr: "" },
+      });
+    } catch (err) {
+      console.error("Error creating education:", err);
+    }
   };
 
-  const handleDeleteEducation = (id: string) => {
-    fetch(`${API_URL}/${id}`, { method: "DELETE" })
-      .then(() =>
-        setEducation((prevEducation) =>
-          prevEducation.filter((edu) => edu._id !== id)
-        )
-      )
-      .catch((err) => console.error("Error deleting education:", err));
+  const handleDeleteEducation = async (id?: string) => {
+    if (!id) return;
+    
+    try {
+      const success = await deleteEducation(id);
+      if (success) {
+        setEducations((prevEducations) => prevEducations.filter((edu) => edu._id !== id));
+      }
+    } catch (err) {
+      console.error("Error deleting education:", err);
+    }
   };
+
+  const handleInputChange = (
+    field: keyof Education, 
+    value: string | LocalizedContent,
+    language?: "en" | "fr"
+  ) => {
+    if (
+      field === "institution" || 
+      field === "degree" || 
+      field === "field_of_study" || 
+      field === "description"
+    ) {
+      if (language) {
+        setNewEducation({
+          ...newEducation,
+          [field]: {
+            ...(newEducation[field] as LocalizedContent || { en: "", fr: "" }),
+            [language]: value
+          }
+        });
+      }
+    } else {
+      setNewEducation({ ...newEducation, [field]: value });
+    }
+  };
+
+  if (loading) {
+    return <div className="p-4 text-white">Loading education data...</div>;
+  }
 
   return (
     <div className="p-4 bg-gray-800 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold text-white">Manage Education</h2>
 
       <div className="mt-4 space-y-4">
-        {education.map((edu) => (
+        {educations.map((education) => (
           <div
-            key={edu._id}
+            key={education._id}
             className="bg-gray-700 p-4 rounded flex justify-between"
           >
-            <span className="text-white">{edu.institution}</span>
+            <div className="text-white">
+              <div><strong>EN:</strong> {education.institution.en}</div>
+              <div><strong>FR:</strong> {education.institution.fr}</div>
+            </div>
             <button
-              onClick={() => handleDeleteEducation(edu._id!)}
+              onClick={() => handleDeleteEducation(education._id)}
               className="text-red-500"
             >
               Delete
@@ -75,64 +115,108 @@ export default function EducationAdmin() {
 
       <div className="mt-6">
         <h3 className="text-xl font-semibold text-white">Add New Education</h3>
-        <input
-          type="text"
-          placeholder="Institution"
-          className="w-full p-2 rounded mt-2"
-          value={newEducation.institution}
-          onChange={(e) =>
-            setNewEducation({ ...newEducation, institution: e.target.value })
-          }
-        />
-        <input
-          type="text"
-          placeholder="Degree"
-          className="w-full p-2 rounded mt-2"
-          value={newEducation.degree || ""}
-          onChange={(e) =>
-            setNewEducation({ ...newEducation, degree: e.target.value })
-          }
-        />
-        <input
-          type="text"
-          placeholder="Field of Study"
-          className="w-full p-2 rounded mt-2"
-          value={newEducation.field_of_study}
-          onChange={(e) =>
-            setNewEducation({ ...newEducation, field_of_study: e.target.value })
-          }
-        />
-        <input
-          type="date"
-          placeholder="Start Date"
-          className="w-full p-2 rounded mt-2"
-          value={newEducation.start_date}
-          onChange={(e) =>
-            setNewEducation({ ...newEducation, start_date: e.target.value })
-          }
-        />
-        <input
-          type="date"
-          placeholder="End Date"
-          className="w-full p-2 rounded mt-2"
-          value={newEducation.end_date || ""}
-          onChange={(e) =>
-            setNewEducation({ ...newEducation, end_date: e.target.value })
-          }
-        />
-        <textarea
-          placeholder="Description"
-          className="w-full p-2 rounded mt-2"
-          value={newEducation.description || ""}
-          onChange={(e) =>
-            setNewEducation({ ...newEducation, description: e.target.value })
-          }
-        ></textarea>
+        
+        <div className="mt-4">
+          <h4 className="text-white">Institution</h4>
+          <input
+            type="text"
+            placeholder="Institution (English)"
+            className="w-full p-2 rounded mt-2"
+            value={newEducation.institution.en}
+            onChange={(e) => handleInputChange("institution", e.target.value, "en")}
+          />
+          <input
+            type="text"
+            placeholder="Institution (French)"
+            className="w-full p-2 rounded mt-2"
+            value={newEducation.institution.fr}
+            onChange={(e) => handleInputChange("institution", e.target.value, "fr")}
+          />
+        </div>
+
+        <div className="mt-4">
+          <h4 className="text-white">Degree</h4>
+          <input
+            type="text"
+            placeholder="Degree (English)"
+            className="w-full p-2 rounded mt-2"
+            value={newEducation.degree?.en || ""}
+            onChange={(e) => handleInputChange("degree", e.target.value, "en")}
+          />
+          <input
+            type="text"
+            placeholder="Degree (French)"
+            className="w-full p-2 rounded mt-2"
+            value={newEducation.degree?.fr || ""}
+            onChange={(e) => handleInputChange("degree", e.target.value, "fr")}
+          />
+        </div>
+
+        <div className="mt-4">
+          <h4 className="text-white">Field of Study</h4>
+          <input
+            type="text"
+            placeholder="Field of Study (English)"
+            className="w-full p-2 rounded mt-2"
+            value={newEducation.field_of_study.en}
+            onChange={(e) => handleInputChange("field_of_study", e.target.value, "en")}
+          />
+          <input
+            type="text"
+            placeholder="Field of Study (French)"
+            className="w-full p-2 rounded mt-2"
+            value={newEducation.field_of_study.fr}
+            onChange={(e) => handleInputChange("field_of_study", e.target.value, "fr")}
+          />
+        </div>
+
+        <div className="mt-4">
+          <h4 className="text-white">Dates</h4>
+          <div className="flex space-x-2">
+            <div className="flex-1">
+              <label className="block text-white text-sm">Start Date</label>
+              <input
+                type="date"
+                className="w-full p-2 rounded mt-1"
+                value={newEducation.start_date}
+                onChange={(e) => handleInputChange("start_date", e.target.value)}
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-white text-sm">End Date (optional)</label>
+              <input
+                type="date"
+                className="w-full p-2 rounded mt-1"
+                value={newEducation.end_date || ""}
+                onChange={(e) => handleInputChange("end_date", e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <h4 className="text-white">Description</h4>
+          <textarea
+            placeholder="Description (English)"
+            className="w-full p-2 rounded mt-2"
+            rows={3}
+            value={newEducation.description?.en || ""}
+            onChange={(e) => handleInputChange("description", e.target.value, "en")}
+          />
+          <textarea
+            placeholder="Description (French)"
+            className="w-full p-2 rounded mt-2"
+            rows={3}
+            value={newEducation.description?.fr || ""}
+            onChange={(e) => handleInputChange("description", e.target.value, "fr")}
+          />
+        </div>
+
         <button
           onClick={handleCreateEducation}
-          className="bg-green-500 text-white p-2 rounded mt-2"
+          className="bg-green-500 text-white p-2 rounded mt-4"
         >
-          Create
+          Create Education
         </button>
       </div>
     </div>
