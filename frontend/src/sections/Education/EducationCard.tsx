@@ -1,25 +1,17 @@
 import { motion } from "framer-motion";
-import { useLanguage } from "@/contexts/LanguageContext";
-
-type MultilingualField = {
-  en: string;
-  fr: string;
-};
 
 type EducationProps = {
   education: {
-    institution: MultilingualField;
-    degree?: MultilingualField;
-    field_of_study: MultilingualField;
+    institution: string;
+    degree?: string;
+    field_of_study: string;
     start_date: string;
     end_date?: string;
-    description?: MultilingualField;
+    description?: string;
   };
 };
 
 export default function EducationCard({ education }: EducationProps) {
-  const { language } = useLanguage();
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -28,14 +20,12 @@ export default function EducationCard({ education }: EducationProps) {
       className="bg-white rounded-lg shadow-lg p-6 border border-gray-300"
     >
       <h3 className="text-xl font-semibold text-gray-800">
-        {education.institution[language]}
+        {education.institution}
       </h3>
       {education.degree && (
-        <p className="text-sm text-gray-600">{education.degree[language]}</p>
+        <p className="text-sm text-gray-600">{education.degree}</p>
       )}
-      <p className="text-sm text-gray-700">
-        {education.field_of_study[language]}
-      </p>
+      <p className="text-sm text-gray-700">{education.field_of_study}</p>
       <p className="text-xs text-gray-500 mt-2">
         {new Date(education.start_date).getFullYear()} -{" "}
         {education.end_date
@@ -43,9 +33,7 @@ export default function EducationCard({ education }: EducationProps) {
           : "Present"}
       </p>
       {education.description && (
-        <p className="text-gray-700 mt-4 text-sm">
-          {education.description[language]}
-        </p>
+        <p className="text-gray-700 mt-4 text-sm">{education.description}</p>
       )}
     </motion.div>
   );
