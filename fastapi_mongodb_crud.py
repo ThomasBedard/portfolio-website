@@ -69,9 +69,13 @@ async def contact_me(form: ContactForm):
         raise HTTPException(status_code=500, detail=f"Failed to send message: {str(e)}")
 
 # Models
+class MultilingualField(BaseModel):
+    en: str
+    fr: str
+
 class Project(BaseModel):
-    title: str
-    description: str
+    title: MultilingualField
+    description: MultilingualField
     image_url: str
     project_url: str
     tech_stack: List[str]
@@ -80,12 +84,12 @@ class ProjectInDB(Project):
     id: str = Field(alias="_id")
 
 class Education(BaseModel):
-    institution: str
-    degree: Optional[str]
-    field_of_study: str
-    start_date: datetime
-    end_date: Optional[datetime]
-    description: Optional[str]
+    institution: MultilingualField
+    degree: Optional[MultilingualField]
+    field_of_study: MultilingualField
+    start_date: str
+    end_date: Optional[str]
+    description: Optional[MultilingualField]
 
 class EducationInDB(Education):
     id: str = Field(alias="_id")
