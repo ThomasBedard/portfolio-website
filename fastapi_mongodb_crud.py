@@ -94,6 +94,7 @@ class Comment(BaseModel):
     user_id: str
     comment_text: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    approved: bool = False
 
 class CommentInDB(Comment):
     id: str = Field(alias="_id")
@@ -178,13 +179,14 @@ async def delete_education(education_id: str):
 
 @app.get("/comments", response_model=List[CommentInDB])
 async def get_comments():
-    comments = await db.comments.find().to_list(100)
+    comments = await db.comments.find({"approved": True}).to_list(100)
     for comment in comments:
         comment["_id"] = str(comment["_id"])
     return comments
 
 @app.post("/comments", response_model=CommentInDB)
 async def create_comment(comment: Comment):
+    comment.approved = False # Unapproved by default
     new_comment = await db.comments.insert_one(comment.dict())
     return {"_id": str(new_comment.inserted_id), **comment.dict()}
 
@@ -206,3 +208,33 @@ async def delete_comment(comment_id: str):
     if delete_result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Comment not found")
     return {"message": "Comment deleted successfully"}
+
+# Admin comments related endpoints
+@app.get("/comments/pending", response_model=List[CommentInDB])
+async def get_pending_comments():
+    comments = await db.comments.find({"approved": False}).to_list(100)
+    for comment in comments:
+        comment["_id"] = str(comment["_id"])
+    return comments
+
+@app.patch("/comments/{comment_id}/approve", response_model=CommentInDB)
+async def approve_comment(comment_id: str):
+    obj_id = ObjectId(comment_id)
+    updated = await db.comments.find_one_and_update(
+        {"_id": obj_id},
+        {"$set": {"approved": True}},
+        return_document=True
+    )
+    if not updated:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    updated["_id"] = str(updated["_id"])
+    return updated
+
+@app.delete("/comments/{comment_id}/deny", response_model=dict)
+async def deny_comment(comment_id: str):
+    obj_id = ObjectId(comment_id)
+    result = await db.comments.delete_one({"_id": obj_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    return {"message": "Comment denied and deleted"}
+
