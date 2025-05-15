@@ -4,16 +4,21 @@ import EducationCard from "./EducationCard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translations } from "@/contexts/translations";
 
-const API_URL = import.meta.env.VITE_API_URL + "/education"; // Use environment variable
+const API_URL = import.meta.env.VITE_API_URL + "/education";
+
+type MultilingualField = {
+  en: string;
+  fr: string;
+};
 
 type EducationType = {
   _id: string;
-  institution: string;
-  degree?: string;
-  field_of_study: string;
+  institution: MultilingualField;
+  degree?: MultilingualField;
+  field_of_study: MultilingualField;
   start_date: string;
   end_date?: string;
-  description?: string;
+  description?: MultilingualField;
 };
 
 export default function Education() {
@@ -47,7 +52,16 @@ export default function Education() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {education.length > 0 ? (
           education.map((edu) => (
-            <EducationCard key={edu._id} education={edu} />
+            <EducationCard
+              key={edu._id}
+              education={{
+                ...edu,
+                institution: edu.institution[language],
+                degree: edu.degree?.[language],
+                field_of_study: edu.field_of_study[language],
+                description: edu.description?.[language],
+              }}
+            />
           ))
         ) : (
           <p className="text-center text-white">{t.loadingEducation}</p>

@@ -8,8 +8,8 @@ const API_URL = import.meta.env.VITE_API_URL + "/projects";
 
 interface Project {
   _id: string;
-  title: string;
-  description: string;
+  title: { en: string; fr: string };
+  description: { en: string; fr: string };
   image_url: string;
   project_url: string;
   tech_stack: string[];
@@ -57,8 +57,8 @@ export default function Projects() {
             projects.map((project) => (
               <ProjectCard
                 key={project._id}
-                title={project.title}
-                description={project.description}
+                title={project.title[language]}
+                description={project.description[language]}
                 imageUrl={project.image_url}
                 projectUrl={project.project_url}
                 techStack={project.tech_stack}
