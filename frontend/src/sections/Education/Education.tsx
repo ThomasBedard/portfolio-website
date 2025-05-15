@@ -52,16 +52,7 @@ export default function Education() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {education.length > 0 ? (
           education.map((edu) => (
-            <EducationCard
-              key={edu._id}
-              education={{
-                ...edu,
-                institution: edu.institution[language],
-                degree: edu.degree?.[language],
-                field_of_study: edu.field_of_study[language],
-                description: edu.description?.[language],
-              }}
-            />
+            <EducationCard key={edu._id} education={edu} />
           ))
         ) : (
           <p className="text-center text-white">{t.loadingEducation}</p>

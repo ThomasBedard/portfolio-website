@@ -57,8 +57,8 @@ export default function Projects() {
             projects.map((project) => (
               <ProjectCard
                 key={project._id}
-                title={project.title[language]}
-                description={project.description[language]}
+                title={project.title}
+                description={project.description}
                 imageUrl={project.image_url}
                 projectUrl={project.project_url}
                 techStack={project.tech_stack}
